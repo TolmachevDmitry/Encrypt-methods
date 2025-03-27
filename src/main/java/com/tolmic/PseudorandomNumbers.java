@@ -5,20 +5,25 @@ package com.tolmic;
  * 
  * @author Dmitry Tolmachev
  */
-public final class PseudorandomNumbers {
+public class PseudorandomNumbers {
 
-    private static double r;
+    private double r;
 
-    public static void seed(double r0) {
-        PseudorandomNumbers.r = r0;
+    public PseudorandomNumbers(double seed) {
+        this.r = seed;
     }
 
-    private static double frac(double number) {
+    private double frac(double number) {
         return number - (int) number;
     }
+
+    public double getCurr() {
+        return r;
+    }
     
-    public static double solve() {
-        r = frac(97 * r + Math.PI);
+    // alternative 97
+    public double run() {
+        r = frac(10000 * r + Math.PI);
 
         return r;
     }

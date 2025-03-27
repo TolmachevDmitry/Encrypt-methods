@@ -3,24 +3,15 @@ package com.tolmic.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+
 public class MathUtils {
 
     public static double eulerFunc(long num) {
         return EulerFunction.eulerPhi(num);
     }
 
-    private static String plusParts() {
-
-    }
-
-    private static int toIntFromChar(char v) {
-        return Integer.valueOf(String.valueOf(v));
-    }
-
-    public static String multiply(String x1, String x2) {
-        char[] a = new String(x1.length() > x2.length() ? x1 : x2).toCharArray();
-        char[] b = new String(x1.length() > x2.length() ? x2 : x1).toCharArray();
-
+    private static List<String> multiplyPart(char[] a, char[] b) {
         List<String> multiplyResults = new ArrayList<>(100);
 
         int n = a.length;
@@ -42,6 +33,12 @@ public class MathUtils {
 
             multiplyResults.add(multiplyResult);
         }
+
+        return multiplyResults;
+    }
+
+    private static String plusPart(List<String> multiplyResults) {
+        int m = multiplyResults.size();
 
         String result = "";
         int sign = 0;
@@ -82,18 +79,38 @@ public class MathUtils {
         return result;
     }
 
+    private static int toIntFromChar(char v) {
+        return Integer.valueOf(String.valueOf(v));
+    }
+
+    public static String multiply(String x1, String x2) {
+        char[] a = new String(x1.length() > x2.length() ? x1 : x2).toCharArray();
+        char[] b = new String(x1.length() > x2.length() ? x2 : x1).toCharArray();
+
+        List<String> multiplyResults = multiplyPart(a, b);
+        String commonResult = plusPart(multiplyResults);
+
+        return commonResult;
+    }
+
     public static String pow(String a, int p) {
         String result = "1";
 
         for (int i = 1; i <= p; i++) {
             result = multiply(result, a);
+            System.out.println(i);
         }
 
         return result;
     }
 
+    public static double countHiSqTable(double alpha, double d) {
+        ChiSquaredDistribution distribution = new ChiSquaredDistribution(d);
+        return distribution.inverseCumulativeProbability(1 - alpha);
+    }
+
     public static void main(String[] args) {
-        System.out.println(pow("12345678901234567", 20));
+        System.out.println(pow("314999112281065205361706341517321987491098667", 100));
     }
 
 }

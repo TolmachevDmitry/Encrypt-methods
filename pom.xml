@@ -11,9 +11,9 @@
     <name>informationsecutity</name>
     <packaging>jar</packaging>
 
-    <!-- <repositories>
+    <repositories>
         <java.version>21</java.version>
-    </repositories> -->
+    </repositories>
 
     <dependencies>
     

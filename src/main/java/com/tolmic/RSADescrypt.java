@@ -2,19 +2,72 @@ package com.tolmic;
 
 import static com.tolmic.utils.MathUtils.eulerFunc;
 
-import java.math.BigInteger;;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;;
 
-public class RSADescrypt {
+public final class RSADescrypt {
 
-    public static BigInteger ecrypt(RSAKey K, BigInteger M) {
+    public static String encrypt(List<BigInteger> M, RSAKey K) {
         BigInteger n = new BigInteger(String.valueOf(K.getN()));
         BigInteger e = new BigInteger(String.valueOf(K.getE()));
 
-        return M.modPow(e, n);
+        return M.stream().map(m -> m.modPow(e, n).toString()).collect(Collectors.joining());
     }
 
-    public static BigInteger decrypt(RSAKey K, BigInteger C) {
+    private static char extractLastSymb(List<BigInteger> mParts) {
+        int lastPartNum = mParts.size() - 1;
+
+        String str = mParts.get(lastPartNum).toString();
+        int lastCharNum = str.length() - 1;
+
+        mParts.set(lastPartNum, new BigInteger(str.substring(0, lastCharNum)));
+
+        return str.charAt(lastCharNum);
+    }
+
+    private static String joinMessegeParts(List<BigInteger> mParts) {
+        return mParts.stream().map(m -> m.toString()).collect(Collectors.joining());
+    }
+
+    private static void printParts(List<BigInteger> parts) {
+        System.out.println("Parts of descrypted messege:");
+        for (BigInteger p : parts) {
+            System.out.println(p);
+        }
+        System.out.println();
+    }
+
+    private static List<BigInteger> splitMessege(String C, long n) {
+        List<BigInteger> mParts = new ArrayList<>();
+
+        int size = C.length();
+
+        String t = "";
+        for (int i = 0; i < size; i++) {
+            String currSymb = String.valueOf(C.charAt(i));
+
+            if (t.isEmpty() && i > 0 && currSymb.equals("0")) {
+                t += extractLastSymb(mParts);
+            }
+
+            t += currSymb;
+
+            if (i == size - 1 || i < size - 1 && Long.valueOf(t + C.charAt(i + 1)) > n) {
+                mParts.add(new BigInteger(t));
+                t = "";
+            }
+        }
+
+        return mParts;
+    }
+
+    public static List<BigInteger> decrypt(String C, RSAKey K) {
         BigInteger minusOne = new BigInteger("-1");
+
+        List<BigInteger> cParts = splitMessege(C, K.getN());
+        printParts(cParts);
 
         BigInteger n = new BigInteger(String.valueOf(K.getN()));
         BigInteger e = new BigInteger(String.valueOf(K.getE()));
@@ -23,7 +76,7 @@ public class RSADescrypt {
 
         BigInteger d = e.modPow(minusOne, eulerN);
 
-        return C.modPow(d, n);
+        return cParts.stream().map(m -> m.modPow(d, n)).collect(Collectors.toList());
     }
 
     public static BigInteger fromLongToBigInteger(double num) {
@@ -32,40 +85,31 @@ public class RSADescrypt {
         int eIndex = strNum.indexOf("E");
         eIndex = eIndex < 0 ? strNum.length() : eIndex;
 
-        String normNum = "";
-        for (int i = 0; i < eIndex; i++) {
-            String symb = String.valueOf(strNum.charAt(i));
+        String normNum = strNum.substring(0, eIndex).replace(".", "");
 
-            if (!symb.equals(".")) {
-                normNum += symb;
-            }
-        }
-
-        int m = 15 - normNum.length();
-        for (int i = 0; i < m; i++) {
-            normNum += "0";
-        }
+        normNum += "0000000";
 
         return new BigInteger(normNum);
     }
 
     public static void main(String[] args) {
-        RSAKey rsaKey = new RSAKey(471090785117207L, 12377);
-        BigInteger C = new BigInteger("314999112281065205361706341517321987491098667");
-        System.out.println("Given C: " + C);
+        RSAKey rsaKey = new RSAKey(471110543304749L, 12397);
+        String C = "229400309539826616904080414433914229452297284548923537277210088832206760805";
 
-        BigInteger M = decrypt(rsaKey, C);
-        System.out.println("M: " + M);
+        System.out.println("Initial C: " + C);
 
-        System.out.println(M.pow(12377));
+        List<BigInteger> decrypted = decrypt(C, rsaKey);
+        System.out.println("Decripted all messege: " + joinMessegeParts(decrypted));
 
-        // BigInteger C1 = ecrypt(rsaKey, M);
-        // System.out.println("C: " + C1);
+        String encrypted = encrypt(decrypted, rsaKey);
 
-        // if (C.equals(C1)) {
-        //     System.out.println("Encrypted M is equals given C");
-        // } else {
-        //     System.out.println("Wrong !");
-        // }
+        System.out.println("Ecnrypted: " + encrypted);
+        System.out.println();
+
+        if (C.equals(encrypted)) {
+            System.out.println("Initial C and encrypted is equals !");
+        } else {
+            System.out.println("Initial C and ecnrypted IS NOT equals !");
+        }
     }
 }
