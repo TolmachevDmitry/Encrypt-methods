@@ -19,7 +19,7 @@ public final class DigitalWatermarks {
     //#region local variables
     private static final double q = 10;
     private static final int c = 3;
-    private static final int r = 100;
+    private static final int r = 200;
 
     private static final String INITIAL_IMAGE_PATH = (new File("").getAbsolutePath()) + "\\src\\main\\resources\\imgaes\\image.jpg";
     private static final String IMAGE_WITH_INFORMATION_PATH = (new File("").getAbsolutePath()) + "\\src\\main\\resources\\imgaes\\informationImage.jpg";
@@ -70,12 +70,18 @@ public final class DigitalWatermarks {
     private static List<Point> getPointSeries(int w, int h) {
         List<Point> points = new ArrayList<>();
 
-        int step = 2 * c + 1;
+        int step = c + 1;
 
-        for (int y = c; y < h - c - 1; y += step) {
+        int i = 0;
+        for (int y = c; y < h - c - 1; y += step + 1) {
+            int j = 0;
             for (int x = c; x < w - c - 1; x += step) {
-                points.add(new Point(x, y));
+                points.add(new Point(x + (i % 2 != 0 ? 1 : 0), y + (j % 2 != 0 ? 1 : 0)));
+
+                j += 1;
             }
+
+            i += 1;
         }
 
         return points;
