@@ -1,4 +1,4 @@
-package com.tolmic;
+package com.tolmic.pseudorandom;
 
 /**
  *  Sensor № 6
@@ -9,8 +9,23 @@ public class PseudorandomNumbers {
 
     private double r;
 
+    private static double C = 5;
+
     public PseudorandomNumbers(double seed) {
         this.r = seed;
+    }
+
+    public PseudorandomNumbers(double seed, double C1) {
+        this.r = seed;
+        C = C1;
+    }
+
+    public static void setC(double C1) {
+        C = C1;
+    }
+
+    public static double getC() {
+        return C;
     }
 
     private double frac(double number) {
@@ -23,7 +38,7 @@ public class PseudorandomNumbers {
     
     // alternative 97
     public double run() {
-        r = frac(10000 * r + Math.PI);
+        r = frac(C * r + Math.PI);
 
         return r;
     }

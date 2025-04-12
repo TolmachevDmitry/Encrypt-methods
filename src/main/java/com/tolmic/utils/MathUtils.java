@@ -1,6 +1,7 @@
 package com.tolmic.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
@@ -109,8 +110,16 @@ public class MathUtils {
         return distribution.inverseCumulativeProbability(1 - alpha);
     }
 
-    public static void main(String[] args) {
-        System.out.println(pow("314999112281065205361706341517321987491098667", 100));
+    public static double mean(double[] data) {
+        return Arrays.stream(data).map(e -> e / data.length).sum();
+    }
+
+    public static double sum(double[] data) {
+        return Arrays.stream(data).sum();
+    }
+
+    public static double error(double a, double b) {
+        return Math.abs(a - b);
     }
 
 }

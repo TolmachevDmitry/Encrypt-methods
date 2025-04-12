@@ -143,4 +143,15 @@ public final class BitsArrayOperationUtils {
 
         return bytes;
     }
+
+    public static String convertToString(int[] bits) {
+        String str = "";
+
+        int n = bits.length;
+        for (int i = 0; i < n; i++) {
+            str += bits[i];
+        }
+
+        return str;
+    }
 }
